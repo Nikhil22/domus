@@ -17,10 +17,16 @@
   },
   "homepage": "https://github.com/vishaal93/domus#readme",
   "dependencies": {
-    "express": "^4.14.0",
-    "twilio": "^2.9.1"
+    "express": "4.14.0",
+    "moment": "2.14.1",
+    "mongoose": "4.5.9",
+    "twilio": "2.9.1"
   },
   "devDependencies": {
-    "gulp": "^3.9.1"
+    "eslint": "3.3.1",
+    "eslint-config-airbnb": "^10.0.1",
+    "eslint-plugin-import": "^1.13.0",
+    "eslint-plugin-jsx-a11y": "^2.1.0",
+    "eslint-plugin-react": "^6.1.2"
   }
 }
