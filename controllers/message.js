@@ -4,9 +4,11 @@ const twilioCtrl = require('./twilio');
 const userCtrl = require('./user');
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
+const Convo = mongoose.model('Convo');
+const ConvoTemplate = mongoose.model('ConvoTemplate');
 
 const saveMessage = ({ number, src, msg }) => {
-    User.findOne({number}).lean()
+    User.findOne({number}).lean().
     .then((user) => {
         let convo = new Convo({u: user._id, msg, to: number, src});
         return convo.save();
@@ -29,13 +31,26 @@ const sendMessage = ({ number, src, msg}) => {
     })
 };
 
+const processLastSentMessage = ({ number, lastRecdMsg }) => {
+  Convo.findOne({lastRecdMsg}).lean()
+  .then((convo) => {
+    ConvoTemplate.findOne( {id: convo.template} ).lean()
+    .then((template) => {
+      console.log(template);
+    })
+  })
+  .catch((ex) => {
+      reject(ex);
+  });
+};
+
 exports.checkRegisteredUser = ({ From: from, Body: message, src }) => {
     userCtrl.getUserDetails({number: from})
     .then((user) => {
         if (!user) {
             userCtrl.addUser({number: from, src})
         } else {
-
+            processLastSentMessage(user);
         }
     })
     .catch((ex) => {

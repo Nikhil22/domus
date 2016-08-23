@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const User = mongoose.model('User');
 
 exports.getUserDetails = ({ number }) => new Promise((resolve, reject) => {
-    User.findOne({number}).populate('preferences', 'lastRecdMsg').lean()
+    User.findOne({number}).lean()
     .then((user) => {
         resolve(user);
     })

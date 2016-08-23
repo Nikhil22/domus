@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 
 const ConvoSchema = new Schema({
     u: {type: Schema.ObjectId, ref: 'UserSchema'},
+    template: {type: Schema.ObjectId, ref: 'ConvoTemplateSchema'},
     msg: String,
     to: String,
     src: {
@@ -12,6 +13,5 @@ const ConvoSchema = new Schema({
         enum: ['twilio']
     }
 });
-//msg, to, src
 
 mongoose.model('Convo', ConvoSchema);

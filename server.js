@@ -19,6 +19,7 @@ mongoose.connect(config.mongo, (err) => {
 require('./models/user.model');
 require('./models/preference.model');
 require('./models/convo.model');
+require('./models/convoTemplates.model');
 
 //route files
 require('./routes/twilio')(app);
