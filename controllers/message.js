@@ -97,7 +97,6 @@ exports.checkRegisteredUser = ({ From: from, Body: message, src }) => {
         } else {
             user.msg = message;
             processLastSentMessage(user);
-            return Promise.resolve();
         }
     })
     .then(() => {
