@@ -8,7 +8,7 @@ module.exports = {
     'default': {
         id: 2,
         // TODO: default text
-        text: ''
+        text: `Reply with "1" to see all your matched listings or "stop" to cancel notifications`
     },
     'listing': {
         id: 3
