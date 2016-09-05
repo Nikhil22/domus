@@ -1,56 +1,32 @@
 'use strict';
 
+const convoTemplates = require('../config/templates');
 const twilioCtrl = require('./twilio');
 const userCtrl = require('./user');
 const mongoose = require('mongoose');
+const moment = require('moment');
 const User = mongoose.model('User');
 const Convo = mongoose.model('Convo');
-const ConvoTemplate = mongoose.model('ConvoTemplate');
 
-const saveMessage = ({ number, src, msg }) => {
-    User.findOne({number}).lean().
+const saveMessage = ({ number, src, msg, id }) => {
+    let convo;
+    let type;
+
+    if (!!id || id === 0) {
+        type = 'sent';
+    }
+
+    User.findOne({number}).lean()
     .then((user) => {
-        let convo = new Convo({u: user._id, msg, to: number, src});
+        convo = new Convo({u: user._id, msg, to: number, src, date: new Date()});
+        if (!!type) {
+            convo.id = id;
+        }
         return convo.save();
     })
     .then(() => {
-        User.update({number}, {lastRecdMsg: convo._id, lastRecdMsgDate: new Date()}).exec();
-    })
-    .catch((ex) => {
-        // TODO: error handle
-    });
-};
-
-const sendMessage = ({ number, src, msg}) => {
-    twilioCtrl.sendMessage({to: number, body: msg})
-    .then(() => {
-        saveMessage({number, src, msg});
-    })
-    .catch((ex) => {
-        // TODO: error handle
-    })
-};
-
-const processLastSentMessage = ({ number, lastRecdMsg }) => {
-  Convo.findOne({lastRecdMsg}).lean()
-  .then((convo) => {
-    ConvoTemplate.findOne( {id: convo.template} ).lean()
-    .then((template) => {
-      console.log(template);
-    })
-  })
-  .catch((ex) => {
-      reject(ex);
-  });
-};
-
-exports.checkRegisteredUser = ({ From: from, Body: message, src }) => {
-    userCtrl.getUserDetails({number: from})
-    .then((user) => {
-        if (!user) {
-            userCtrl.addUser({number: from, src})
-        } else {
-            processLastSentMessage(user);
+        if (!!type) {
+            User.update({number}, {lastRecvdMsg: convo._id, lastRecvdMsgDate: new Date()}).exec();
         }
     })
     .catch((ex) => {
@@ -58,8 +34,66 @@ exports.checkRegisteredUser = ({ From: from, Body: message, src }) => {
     });
 };
 
-exports.sendWelcomeMessage = ({ number, src }) => {
-    // TODO: debug
-    const msg = 'onboarding link';
-    sendMessage({number, src, msg});
+const sendMessage = ({ number, src, msg, id}) => {
+    twilioCtrl.sendMessage({to: number, body: msg})
+    .then(() => {
+        saveMessage({number, src, msg, id});
+    })
+    .catch((ex) => {
+        // TODO: error handle
+    });
+};
+
+const sendDefaultMessage = ({ number, src }) => {
+    sendMessage({number, src, msg: convoTemplates.default.text, id: convoTemplates.default.text});
+};
+
+const sendWelcomeMessage = exports.sendWelcomeMessage = ({ number, src }) => {
+    const msg = `${convoTemplates.welcome.link}/${number}`;
+    sendMessage({number, src, msg, id: convoTemplates.welcome.id});
+};
+
+const processMessage = ({ number, msg, src, lastRecvdMsg }) => {
+    const lastId = lastRecvdMsg.id;
+    if (lastId === 1) { // response to welcome message - send welcome message again
+        sendWelcomeMessage({number, src});
+    } else if (lastId === 2) { //response to default message
+
+    } else if (lastId === 3) { //response to listing message
+
+    }
+};
+
+const processLastSentMessage = ({ number, lastRecvdMsg, lastRecvdMsgDate, msg, isOnboarded }) => {
+    const src = lastRecvdMsg.src;
+
+    if (msg.indexOf('help') !== -1) {
+        sendDefaultMessage({number, src});
+    } else if (!isOnboarded) {
+        sendWelcomeMessage({number, src});
+    } else if (isOnboarded && !!lastRecvdMsg && moment(lastRecvdMsgDate).isAfter(moment().subtract(6, 'hours'))) {
+        processMessage({number, msg, src, lastRecvdMsg});
+    } else {
+        sendDefaultMessage({number, src});
+    }
+};
+
+exports.checkRegisteredUser = ({ From: from, Body: message, src }) => {
+    const number = from;
+    userCtrl.getUserDetails({number})
+    .then((user) => {
+        if (!user) {
+            return userCtrl.addUser({number, src});
+        } else {
+            user.msg = message;
+            processLastSentMessage(user);
+            return Promise.resolve();
+        }
+    })
+    .then(() => {
+        saveMessage({number, src, msg: message});
+    })
+    .catch((ex) => {
+        // TODO: error handle
+    });
 };

@@ -6,9 +6,9 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema({
     number: String,
     name: String,
-    preferences: {type: Schema.ObjectId, ref: 'PreferenceSchema'},
-    lastRecdMsg: {type: Schema.ObjectId, ref: 'ConvoSchema'},
-    lastRecdMsgDate: Date,
+    preferences: {type: Schema.ObjectId, ref: 'Preference'},
+    lastRecvdMsg: {type: Schema.ObjectId, ref: 'Convo'},
+    lastRecvdMsgDate: Date,
     d: { //deleted
         type: Boolean,
         default: false
@@ -27,4 +27,5 @@ const UserSchema = new Schema({
     }
 });
 
+UserSchema.index({ number: 1 });
 mongoose.model('User', UserSchema);

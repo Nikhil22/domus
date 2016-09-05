@@ -1,11 +1,11 @@
-'use strict'
+'use strict';
 
 const msgCtrl = require('./message');
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
 
 exports.getUserDetails = ({ number }) => new Promise((resolve, reject) => {
-    User.findOne({number}).lean()
+    User.findOne({number}).populate('preferences').populate('lastRecvdMsg').lean()
     .then((user) => {
         resolve(user);
     })
@@ -14,13 +14,14 @@ exports.getUserDetails = ({ number }) => new Promise((resolve, reject) => {
     });
 });
 
-exports.addUser = ({ number, src }) => {
+exports.addUser = ({ number, src }) => new Promise((resolve, reject) => {
     let user = new User({number, src});
     user.save()
     .then(() => {
         msgCtrl.sendWelcomeMessage({number, src});
+        resolve();
     })
     .catch((ex) => {
-        // TODO: error handle
+        reject(ex);
     });
-};
+});
