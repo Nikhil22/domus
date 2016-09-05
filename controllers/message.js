@@ -53,14 +53,24 @@ const sendWelcomeMessage = exports.sendWelcomeMessage = ({ number, src }) => {
     sendMessage({number, src, msg, id: convoTemplates.welcome.id});
 };
 
+const processDefaultMessage = ({ number, src, msg }) => {
+
+};
+
+const processListingMessages = ({ number, src, msg, lastRecvdMsg }) => {
+
+};
+
 const processMessage = ({ number, msg, src, lastRecvdMsg }) => {
     const lastId = lastRecvdMsg.id;
     if (lastId === 1) { // response to welcome message - send welcome message again
         sendWelcomeMessage({number, src});
     } else if (lastId === 2) { //response to default message
-
+        processDefaultMessage({number, src, msg});
     } else if (lastId === 3) { //response to listing message
-
+        processListingMessage({number, src, msg, lastRecvdMsg});
+    } else { //don't know -> ping us
+        // TODO: error
     }
 };
 
@@ -87,8 +97,8 @@ exports.checkRegisteredUser = ({ From: from, Body: message, src }) => {
         } else {
             user.msg = message;
             processLastSentMessage(user);
-            return Promise.resolve();
         }
+
     })
     .then(() => {
         saveMessage({number, src, msg: message});
