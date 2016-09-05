@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 
 const MissedListingSchema = new Schema({
     u: {type: Schema.ObjectId, ref: 'User'},
-    l: [Number] //listings - array of SQL ids of listings
+    l: [{type: Schema.ObjectId, ref: 'Listing'}]
 });
 
 MissedListingSchema.index({ u: 1 });

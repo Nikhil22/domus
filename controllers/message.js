@@ -98,7 +98,6 @@ exports.checkRegisteredUser = ({ From: from, Body: message, src }) => {
             user.msg = message;
             processLastSentMessage(user);
         }
-
     })
     .then(() => {
         saveMessage({number, src, msg: message});
