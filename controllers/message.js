@@ -57,14 +57,14 @@ const processDefaultMessage = ({ number, src, msg }) => {
 
 };
 
-const processListingMessages = ({ number, src, msg, lastRecvdMsg }) => {
+const processListingMessage = ({ number, src, msg, lastRecvdMsg }) => {
 
 };
 
 const processMessage = ({ number, msg, src, lastRecvdMsg }) => {
     const lastId = lastRecvdMsg.id;
-    if (lastId === 1) { // response to welcome message - send welcome message again
-        sendWelcomeMessage({number, src});
+    if (lastId === 1) { // response to welcome message
+
     } else if (lastId === 2) { //response to default message
         processDefaultMessage({number, src, msg});
     } else if (lastId === 3) { //response to listing message
@@ -77,7 +77,7 @@ const processMessage = ({ number, msg, src, lastRecvdMsg }) => {
 const processLastSentMessage = ({ number, lastRecvdMsg, lastRecvdMsgDate, msg, isOnboarded }) => {
     const src = lastRecvdMsg.src;
 
-    if (msg.indexOf('help') !== -1) {
+    if (msg.toLowerCase().indexOf('help') !== -1) {
         sendDefaultMessage({number, src});
     } else if (!isOnboarded) {
         sendWelcomeMessage({number, src});
