@@ -10,4 +10,4 @@ const MissedListingSchema = new Schema({
 
 MissedListingSchema.index({ u: 1 });
 
-mongoose.model('Convo', MissedListingSchema);
+mongoose.model('MissedListing', MissedListingSchema);
