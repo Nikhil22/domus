@@ -2,7 +2,7 @@
 
 var express  = require('express'),
     app      = express(),
-    port     = 3000,
+    port     = process.env.PORT || 3000,
     mongoose = require('mongoose'),
     config   = require('./config/config');
 
