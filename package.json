@@ -1,21 +1,14 @@
 {
-  "name": "domus",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "ulixir",
+  "version": "0.2.5",
+  "description": "A sample Node.js app using Express 4",
+  "engines": {
+    "node": "5.9.1"
+  },
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/vishaal93/domus.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/vishaal93/domus/issues"
-  },
-  "homepage": "https://github.com/vishaal93/domus#readme",
   "dependencies": {
     "express": "4.14.0",
     "moment": "2.14.1",
@@ -29,5 +22,15 @@
     "eslint-plugin-import": "^1.13.0",
     "eslint-plugin-jsx-a11y": "^2.1.0",
     "eslint-plugin-react": "^6.1.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/heroku/node-js-getting-started"
+  },
+  "keywords": [
+    "node",
+    "heroku",
+    "express"
+  ],
+  "license": "MIT"
 }
